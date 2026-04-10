@@ -1,0 +1,23 @@
+[
+    {
+        "id": 1,
+        "image": "https://i.ibb.co.com/vCGQ0nSz/banner1-edited.png",
+        "title_secondary": "We Make Sure Your",
+        "title_primary": "Parcel Arrives",
+        "title_secondary_second": "-No Fuss"
+    },
+    {
+        "id": 2,
+        "image": "https://i.ibb.co.com/Q7966Qcd/banner2-edited.png",
+        "title_secondary": "Fastest",
+        "title_primary": "Dlivery & Easy",
+        "title_secondary_second": "-Pickup"
+    },
+    {
+        "id": 3,
+        "image": "https://i.ibb.co.com/VWtPPVHC/banner3-edited.png",
+        "title_secondary": "Delivery in 30",
+        "title_primary": "Minutes at your",
+        "title_secondary_second": "-doorstep"
+    }
+]
