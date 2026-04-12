@@ -1,9 +1,14 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import Logo from "../../Components/Logo";
+import useAuth from "../../hooks/useAuth";
+import { useState } from "react";
 
 const Signin = () => {
+    const {signIn} = useAuth();
+    const [fireaseError, setFirebaseError] = useState('');
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -12,10 +17,24 @@ const Signin = () => {
 
     const formData = async (data) => {
         try {
-            console.log("Login Data:", data);
-            // 🔥 later: firebase login
+            setFirebaseError(""); // reset error
+
+            const result = await signIn(data.email, data.password);
+            const user = result.user;
+
+            console.log(user);
+
+            // ✅ only navigate if success
+            navigate('/');
+
         } catch (error) {
-            console.error(error);
+            console.error(error.message);
+
+            if (error.code === "auth/invalid-credential") {
+                setFirebaseError("invalid-credential. Email/password didn't match.");
+            } else {
+                setFirebaseError("Something went wrong. Try again.");
+            }
         }
     };
 
@@ -71,6 +90,7 @@ const Signin = () => {
                     <button className="btn bg-primary text-black w-full mb-4">
                         Signin
                     </button>
+                    <p className='text-red-500 mb-2 text-center'>{fireaseError}</p>
                 </form>
 
                 {/* Redirect */}

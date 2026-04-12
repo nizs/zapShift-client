@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 import Logo from './Logo';
 
 const Navbar = () => {
+    const { user, logOut } = useAuth();
     const link = <>
         <li className='font-bold text-gray-600'><Link to='/'>Home</Link></li>
         <li className='font-bold text-gray-600'><Link to='/coverage'>Coverage</Link></li>
@@ -10,6 +12,16 @@ const Navbar = () => {
         <li className='font-bold text-gray-600'><Link to='/about'>About</Link></li>
         <li className='font-bold text-gray-600'><Link to='/Contact'>Contact</Link></li>
     </>
+
+
+    const handleLogOut = () => {
+        logOut()
+            .then(() => { })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
     return (
         <div className="navbar bg-base-100 shadow-sm lg:px-8 rounded-xl">
             <div className="navbar-start">
@@ -31,8 +43,15 @@ const Navbar = () => {
                 </ul>
             </div>
             <div className="navbar-end">
-                <Link to='/signin' className="btn me-2 bg-primary text-white">Signin</Link>
-                <Link to='/register' className="btn">Signup</Link>
+                {
+                    user ?
+                        <>
+                            <Link onClick={handleLogOut} className="btn me-2 bg-primary text-white">Logout</Link>
+                        </> : <>
+                            <Link to='/signin' className="btn me-2 bg-primary text-white">Signin</Link>
+                            <Link to='/register' className="btn">Signup</Link>
+                        </>
+                }
             </div>
         </div>
     );

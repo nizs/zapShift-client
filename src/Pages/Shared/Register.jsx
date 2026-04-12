@@ -1,24 +1,52 @@
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUserCircle, FaGoogle } from "react-icons/fa";
 import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import useAuth from "../../hooks/useAuth";
 
 
 const Register = () => {
+    const { createUser } = useAuth();
     const {
         register,
         handleSubmit,
         formState: { errors },
+        reset,
+        setValue,
     } = useForm();
     const [imagePreview, setImagePreview] = useState(null);
+    const [fireaseError, setFirebaseError] = useState('');
+    const navigate = useNavigate();
 
     const formData = async (data) => {
         try {
-            console.log("Register Data:", data);
-            // 🔥 later: firebase createUser
+            setFirebaseError("");
+
+            const result = await createUser(data.email, data.password);
+            console.log(result.user);
+
+            reset(); // ✅ clear all on success
+            navigate("/signin");
+
         } catch (error) {
-            console.error(error);
+            console.error(error.code);
+
+            if (error.code === "auth/email-already-in-use") {
+                setFirebaseError("Email already in use. Try another.");
+
+                setValue("email", "");
+                setFocus("email"); // 🔥 focus
+            }
+            else if (error.code === "auth/weak-password") {
+                setFirebaseError("Password is too weak");
+
+                setValue("password", "");
+                setFocus("password"); // 🔥 focus
+            }
+            else {
+                setFirebaseError("Something went wrong. Try again.");
+            }
         }
     };
 
@@ -63,7 +91,7 @@ const Register = () => {
                                 />
                             ) : (
                                 <div className="text-primary text-6xl">
-                                    <FaCloudUploadAlt  />
+                                    <FaCloudUploadAlt />
                                 </div>
                             )}
                         </label>
@@ -142,6 +170,7 @@ const Register = () => {
                     <button className="btn bg-primary text-black w-full mb-4">
                         Register
                     </button>
+                    <p className='text-red-500 mb-2 text-center'>{fireaseError}</p>
                 </form>
 
                 {/* Redirect */}
