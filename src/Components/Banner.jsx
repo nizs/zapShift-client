@@ -19,7 +19,7 @@ const Banner = () => {
           disableOnInteraction: false,
         }}
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
-        className="w-full h-[60vh] md:h-[75vh] lg:h-[85vh]"
+        className="w-full h-[60vh] md:h-[75vh] lg:h-[85vh] rounded-xl"
       >
         {slides.map((slide, index) => (
           <SwiperSlide key={slide.id}>
