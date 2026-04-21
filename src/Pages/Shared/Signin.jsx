@@ -1,41 +1,36 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle } from "react-icons/fa";
-import Logo from "../../Components/Logo";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import { useState } from "react";
+import SocialLogin from "../../Components/SocialLogin";
+import toast from "react-hot-toast";
 
 const Signin = () => {
-    const {signIn} = useAuth();
+    const { signInUser } = useAuth();
     const [fireaseError, setFirebaseError] = useState('');
+    const location = useLocation();
     const navigate = useNavigate();
+    console.log(location);
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm();
 
-    const formData = async (data) => {
-        try {
-            setFirebaseError(""); // reset error
-
-            const result = await signIn(data.email, data.password);
-            const user = result.user;
-
-            console.log(user);
-
-            // ✅ only navigate if success
-            navigate('/');
-
-        } catch (error) {
-            console.error(error.message);
-
-            if (error.code === "auth/invalid-credential") {
-                setFirebaseError("invalid-credential. Email/password didn't match.");
-            } else {
-                setFirebaseError("Something went wrong. Try again.");
-            }
-        }
+    const handleLogin = (data) => {
+        setFirebaseError(""); // reset error
+        signInUser(data.email, data.password)
+            .then((result) => {
+                console.log(result.user)
+                toast.success('Successfully LoggedIn!')
+                // redirecting user where they tried to went 
+                setTimeout(() => {
+                    navigate(location?.state || '/');
+                }, 1000);
+            })
+            .catch(error => {
+                console.log(error)
+            })
     };
 
     return (
@@ -50,7 +45,7 @@ const Signin = () => {
                 </p>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit(formData)}>
+                <form onSubmit={handleSubmit(handleLogin)}>
 
                     {/* Email */}
                     <div className="mb-4">
@@ -96,7 +91,10 @@ const Signin = () => {
                 {/* Redirect */}
                 <p className="text-center text-sm mb-4">
                     Don’t have any account?{" "}
-                    <Link to="/register" className="text-accent underline">
+                    <Link
+                        state={location?.state}
+                        to="/register"
+                        className="text-accent underline">
                         Register
                     </Link>
                 </p>
@@ -105,9 +103,7 @@ const Signin = () => {
                 <div className="divider">OR</div>
 
                 {/* Google Button */}
-                <button className="btn w-full flex items-center gap-2">
-                    <FaGoogle /> Continue with Google
-                </button>
+                <SocialLogin />
             </div>
         </div>
     );

@@ -9,6 +9,8 @@ import Coverage from '../Pages/Coverage/Coverage';
 import Home from '../Pages/Home/Home';
 import Signin from '../Pages/Shared/Signin';
 import Register from '../Pages/Shared/Register';
+import PrivateRoute from './PrivateRoute';
+import Rider from '../Pages/Rider/Rider';
 
 export const router = createBrowserRouter([
     {
@@ -31,6 +33,10 @@ export const router = createBrowserRouter([
             {
                 path: "/blog",
                 Component: Blog
+            },
+            {
+                path: "/rider",
+                element: <PrivateRoute><Rider /></PrivateRoute>
             },
             {
                 path: "/contact",

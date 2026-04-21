@@ -1,13 +1,14 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaGoogle } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FaCloudUploadAlt } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth";
+import axios from "axios";
+import SocialLogin from "../../Components/SocialLogin";
+import toast from "react-hot-toast";
 
 
 const Register = () => {
-    const { createUser } = useAuth();
+    const { createUser, updateUserProfile } = useAuth();
     const {
         register,
         handleSubmit,
@@ -15,39 +16,54 @@ const Register = () => {
         reset,
         setValue,
     } = useForm();
-    const [imagePreview, setImagePreview] = useState(null);
     const [fireaseError, setFirebaseError] = useState('');
+    const location = useLocation();
     const navigate = useNavigate();
+    console.log(location);
 
-    const formData = async (data) => {
-        try {
-            setFirebaseError("");
+    const handleRegistration = (data) => {
+        setFirebaseError("");
 
-            const result = await createUser(data.email, data.password);
-            console.log(result.user);
+        console.log("FORM STARTED");
+        const profileImage = data.photo[0]; // having our photo 
 
-            reset(); // ✅ clear all on success
-            navigate("/signin");
+        // 1️⃣ Create user
+        createUser(data.email, data.password)
+            .then(result => {
+                console.log(result.user)
 
-        } catch (error) {
-            console.error(error.code);
+                //Preparing form data for imgBB
+                const formData = new FormData();
+                formData.append('image', profileImage);
+                //Upload to imgBB using Axios
+                const image_API_URL = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`;
 
-            if (error.code === "auth/email-already-in-use") {
-                setFirebaseError("Email already in use. Try another.");
+                axios.post(image_API_URL, formData)
+                    .then(res => {
+                        console.log('after image upload', res.data.data.display_url)
 
-                setValue("email", "");
-                setFocus("email"); // 🔥 focus
-            }
-            else if (error.code === "auth/weak-password") {
-                setFirebaseError("Password is too weak");
+                        // 3️⃣ Update user profile
+                        const userProfile = {
+                            displayName: data.name,
+                            photoURL: res.data.data.display_url
+                        }
 
-                setValue("password", "");
-                setFocus("password"); // 🔥 focus
-            }
-            else {
-                setFirebaseError("Something went wrong. Try again.");
-            }
-        }
+                        updateUserProfile(userProfile)
+                            .then(() => {
+                                console.log('user profile updated');
+                                toast.success('Successfully LoggedIn!')
+                                // redirecting user where they tried to went 
+                                setTimeout(() => {
+                                    navigate(location?.state || '/');
+                                }, 1000);
+                            })
+                            .catch(error => console.log(error))
+                    })
+
+            })
+            .catch(error => {
+                console.log(error)
+            })
     };
 
     return (
@@ -63,38 +79,23 @@ const Register = () => {
                 </p>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit(formData)}>
+                <form onSubmit={handleSubmit(handleRegistration)}>
 
                     {/* 🔥 Clickable User Image Upload */}
-                    <div className="flex justify-center mb-4">
-                        <label className="cursor-pointer">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                {...register("image", {
-                                    required: "Profile image is required",
-                                })}
-                                onChange={(e) => {
-                                    const file = e.target.files[0];
-                                    if (file) {
-                                        setImagePreview(URL.createObjectURL(file));
-                                    }
-                                }}
-                            />
-
-                            {imagePreview ? (
-                                <img
-                                    src={imagePreview}
-                                    alt="Preview"
-                                    className="w-18 h-18 rounded-full object-cover border-2 border-primary"
-                                />
-                            ) : (
-                                <div className="text-primary text-6xl">
-                                    <FaCloudUploadAlt />
-                                </div>
-                            )}
-                        </label>
+                    <div className="mb-4">
+                        <input
+                            type="file"
+                            placeholder="Upload Your user photo"
+                            className="file-input input-bordered w-full"
+                            {...register("photo", {
+                                required: "User Photo is required",
+                            })}
+                        />
+                        {errors.name && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.photo.message}
+                            </p>
+                        )}
                     </div>
 
                     {/* Error Message */}
@@ -176,7 +177,10 @@ const Register = () => {
                 {/* Redirect */}
                 <p className="text-center text-sm mb-4">
                     Already have an account?{" "}
-                    <Link to="/signin" className="text-accent underline">
+                    <Link
+                        state={location?.state}
+                        to="/signin"
+                        className="text-accent underline">
                         Signin
                     </Link>
                 </p>
@@ -185,9 +189,7 @@ const Register = () => {
                 <div className="divider">OR</div>
 
                 {/* Google Button */}
-                <button className="btn w-full flex items-center gap-2">
-                    <FaGoogle /> Continue with Google
-                </button>
+                <SocialLogin />
             </div>
         </div>
     );
