@@ -11,6 +11,7 @@ import Signin from '../Pages/Shared/Signin';
 import Register from '../Pages/Shared/Register';
 import PrivateRoute from './PrivateRoute';
 import Rider from '../Pages/Rider/Rider';
+import SendParcel from '../Pages/SendParcel/SendParcel';
 
 export const router = createBrowserRouter([
     {
@@ -37,6 +38,11 @@ export const router = createBrowserRouter([
             {
                 path: "/rider",
                 element: <PrivateRoute><Rider /></PrivateRoute>
+            },
+            {
+                path: "/sendParcel",
+                element: <PrivateRoute><SendParcel /></PrivateRoute>,
+                loader: () => fetch('./warehouses.json').then(res => res.json())
             },
             {
                 path: "/contact",
