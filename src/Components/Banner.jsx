@@ -21,7 +21,7 @@ const Banner = () => {
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
         className="w-full h-[60vh] md:h-[75vh] lg:h-[85vh] rounded-xl"
       >
-        {slides.map((slide, index) => (
+        {slides?.map((slide, index) => (
           <SwiperSlide key={slide.id}>
             <div
               className="w-full h-full bg-cover bg-center flex items-center"

@@ -12,6 +12,8 @@ import Register from '../Pages/Shared/Register';
 import PrivateRoute from './PrivateRoute';
 import Rider from '../Pages/Rider/Rider';
 import SendParcel from '../Pages/SendParcel/SendParcel';
+import DashboradLayout from '../Layout/DashboradLayout';
+import MyParcels from '../Pages/Dashboard/MyParcels';
 
 export const router = createBrowserRouter([
     {
@@ -21,7 +23,10 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 Component: Home,
-                loader: async () => fetch("./banner.json")
+                loader: async () => {
+                    const res = await fetch("/public/banner.json");
+                    return res;
+                }
             },
             {
                 path: "coverage",
@@ -32,20 +37,20 @@ export const router = createBrowserRouter([
                 Component: About
             },
             {
-                path: "/blog",
+                path: "blog",
                 Component: Blog
             },
             {
-                path: "/rider",
+                path: "rider",
                 element: <PrivateRoute><Rider /></PrivateRoute>
             },
             {
-                path: "/sendParcel",
+                path: "sendParcel",
                 element: <PrivateRoute><SendParcel /></PrivateRoute>,
                 loader: () => fetch('./warehouses.json').then(res => res.json())
             },
             {
-                path: "/contact",
+                path: "contact",
                 Component: Contact
             },
         ]
@@ -55,13 +60,23 @@ export const router = createBrowserRouter([
         Component: AuthLayout,
         children: [
             {
-                path: "/signin",
+                path: "signin",
                 Component: Signin
             },
             {
-                path: "/register",
+                path: "register",
                 Component: Register
             }
         ]
     },
+    {
+        path: "/dashboard",
+        element: <PrivateRoute><DashboradLayout /></PrivateRoute>,
+        children: [
+            {
+                path: "my-parcels",
+                Component: MyParcels
+            }
+        ]
+    }
 ])

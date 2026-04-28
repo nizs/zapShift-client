@@ -13,7 +13,15 @@ const Navbar = () => {
         <li className='font-bold text-gray-600'><Link to='/sendParcel'>Send a Parcel</Link></li>
         <li className='font-bold text-gray-600'><Link to='/about'>About</Link></li>
         <li className='font-bold text-gray-600'><Link to='/Contact'>Contact</Link></li>
+
+        {
+            user && <>
+                <li className='font-bold text-gray-600'><Link to='/dashboard/my-parcels'>Dashborad</Link></li>
+            </>
+        }
     </>
+
+
 
 
     const handleLogOut = () => {
