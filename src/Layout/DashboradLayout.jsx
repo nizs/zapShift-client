@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import { GiPaperBagFolded } from "react-icons/gi";
 import { FaHome } from "react-icons/fa";
+import Logo from '../Components/Logo';
 
 
 
@@ -29,6 +30,12 @@ const DashboradLayout = () => {
                     {/* Sidebar content here */}
                     <ul className="menu w-full grow text-gray-600 font-semibold gap-1">
                         {/* List item */}
+                        <li>
+                            <Link to="/" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
+                                {/* Home icon */}
+                                {/* <Logo /> */}
+                            </Link>
+                        </li>
                         <li>
                             <Link to="/" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
                                 {/* Home icon */}
