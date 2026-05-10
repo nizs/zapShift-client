@@ -6,7 +6,6 @@ import { CiEdit } from "react-icons/ci";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { MdDeleteOutline } from "react-icons/md";
 import Swal from 'sweetalert2'
-import { Link } from 'react-router';
 
 const MyParcels = () => {
     const { user } = useAuth();
@@ -47,6 +46,18 @@ const MyParcels = () => {
             }
         });
     }
+
+    const handlePayment = async (parcel) => {
+        const paymentInfo = {
+            cost: parcel.cost,
+            parcelId: parcel._id,
+            senderEmail: parcel.senderEmail,
+            parcelName: parcel.parcelName
+        }
+        const res = await axiosSecure.post('/create-checkout-session', paymentInfo);
+        console.log(res.data);
+        window.location.href = res.data.url;
+    }
     return (
         <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 m-16">
             <table className="table table-zebra w-full">
@@ -86,7 +97,7 @@ const MyParcels = () => {
                                 {/* Payments */}
                                 <td className="w-24">
                                     {
-                                        parcel.paymentStatus === "paid" ? <span className="text-green-400">Paid</span> : <Link to={`/dashboard/payment/${parcel._id}`}><button className="btn btn-primary text-black btn-sm">Pay</button></Link>
+                                        parcel.paymentStatus === "paid" ? <span className="text-green-400">Paid</span> : <button onClick={() => { handlePayment(parcel) }} className="btn btn-primary text-black btn-sm">Pay</button>
                                     }
                                 </td>
 
